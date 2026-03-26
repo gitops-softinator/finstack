@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: auth-service
+            path: ./services/auth-service
+          - name: notification-service
+            path: ./services/notification-service
+          - name: payment-service
+            path: ./services/payment-service
+          - name: transaction-service
+            path: ./services/transaction-service
+          - name: user-service
+            path: ./services/user-service
+          - name: frontend
+            path: ./frontend
+          - name: gateway
+            path: ./gateway
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+    
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+    
+      - name: Build & Push
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest ${{ matrix.path }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest
