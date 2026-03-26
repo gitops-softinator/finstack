@@ -38,5 +38,5 @@ jobs:
     
       - name: Build & Push
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest ${{ matrix.path }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest
+          docker build -t finstack-${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest ${{ matrix.path }}
+          docker push finstack-${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:latest
