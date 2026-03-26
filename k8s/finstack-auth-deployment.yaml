@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-auth
+  template:
+    metadata:
+      labels:
+        app: finstack-auth
+    spec:
+      containers:
+      - name: finstack-auth
+        image: gitopssoftinator/finstack-auth-service:1.1
+        env:
+        - name: MONGO_URI
+          value: mongodb://finstack-mongodb-service:27017/finstack
+        ports:
+        - containerPort: 4000

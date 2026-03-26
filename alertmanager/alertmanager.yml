@@ -1,0 +1,27 @@
+#global:
+  #  resolve_timeout: 5m
+
+    #route:
+  #  group_by: ['alertname']
+  #  group_wait: 10s
+    #  group_interval: 30s
+    #  repeat_interval: 1h
+    #  receiver: 'default'
+
+    #receivers:
+  #  - name: 'default'
+
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'gitops@softinator.com'
+  smtp_auth_username: 'gitops@softinator.com'
+  smtp_auth_password: 'tbyn mguj rydk akkl'
+
+route:
+  receiver: email-alert
+
+receivers:
+  - name: email-alert
+    email_configs:
+      - to: gitops@softinator.com
+        send_resolved: true

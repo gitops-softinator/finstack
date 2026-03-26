@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-mongodb
+  template:
+    metadata:
+      labels:
+        app: finstack-mongodb
+    spec:
+      containers:
+        - name: finstack-mongodb
+          image: mongo:7
+          ports:
+          - containerPort: 27017

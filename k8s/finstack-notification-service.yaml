@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: finstack-notification-service
+spec:
+  type: ClusterIP
+  selector:
+    app: finstack-notification
+  ports:
+    - port: 4003
+      targetPort: 4003

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: finstack-auth-service
+spec:
+  type: ClusterIP
+  selector:
+    app: finstack-auth
+  ports:
+  - port: 4000
+    targetPort: 4000

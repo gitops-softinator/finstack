@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-frontend
+  template:
+    metadata:
+      labels:
+        app: finstack-frontend
+    spec:
+      containers:
+        - name: finstack-frontend
+          image: gitopssoftinator/finstack-frontend:1.0
+          ports:
+          - containerPort: 80

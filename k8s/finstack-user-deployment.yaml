@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-user
+  template:
+    metadata:
+      labels:
+        app: finstack-user
+    spec:
+      containers:
+      - name: finstack-user
+        image: gitopssoftinator/finstack-user-service:1.1
+        env:
+        - name: MONGO_URI
+          value: mongodb://finstack-mongodb-service:27017/finstack
+        ports:
+        - containerPort: 4001

@@ -1,0 +1,38 @@
+groups:
+
+  - name: finstack-alerts
+
+    rules:
+
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API error rate"
+          description: "More than 5% of requests are failing"
+
+      - alert: HighContainerCPU
+        expr: rate(container_cpu_usage_seconds_total[1m]) > 0.8
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High container CPU usage"
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name!="cadvisor"} / container_spec_memory_limit_bytes > 0.8 and container_spec_memory_limit_bytes > 0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container memory usage above 80%"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service is down"

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-transaction
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-transaction
+  template:
+    metadata:
+      labels:
+        app: finstack-transaction
+    spec:
+      containers:
+        - name: finstack-transaction
+          image: gitopssoftinator/finstack-transaction-service:1.1
+          env:
+          - name: MONGO_URI
+            value: mongodb://finstack-mongodb-service:27017/finstack
+          ports:
+          - containerPort: 4004

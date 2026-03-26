@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finstack-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finstack-gateway
+  template:
+    metadata:
+      labels:
+        app: finstack-gateway
+    spec:
+      containers:
+      - name: finstack-gateway
+        image: gitopssoftinator/finstack-gateway:1.2
+        ports:
+          - containerPort: 3000
