@@ -1,7 +1,7 @@
 const express = require("express")
 const axios = require("axios")
-const client = require("prom-client")
-client.collectDefaultMetrics()
+// const client = require("prom-client")
+// client.collectDefaultMetrics()
 const app = express()
 
 app.use(express.json())
@@ -26,6 +26,7 @@ app.post("/pay", async (req,res)=>{
   res.send(response.data)
 })
 
+/*
 const httpRequestsTotal = new client.Counter({
   name: "http_requests_total",
   help: "Total number of HTTP requests",
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
   next()
 
 })
+*/
 
 app.get("/health", async (req, res) => {
   try {
@@ -81,10 +83,12 @@ app.get("/health", async (req, res) => {
 });
 
 
+/*
 app.get("/metrics", async (req,res)=>{
   res.set("Content-Type", client.register.contentType)
   res.end(await client.register.metrics())
 })
+*/
 
 app.listen(3000,()=>{
   console.log("API Gateway running")

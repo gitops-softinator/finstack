@@ -5,3 +5,6 @@
 tfplan
 terraform.tfvars
 .terraform.lock.hcl
+
+# Archive
+.archive/

@@ -1,8 +1,8 @@
-require('./tracing')
+// require('./tracing')
 const express = require("express")
 const mongoose = require("mongoose")
-const client = require("prom-client")
-client.collectDefaultMetrics()
+// const client = require("prom-client")
+// client.collectDefaultMetrics()
 const app = express()
 app.use(express.json())
 
@@ -73,10 +73,12 @@ app.get('/health', (req, res) => {
   });
 });
 
+/*
 app.get("/metrics", async (req,res)=>{
   res.set("Content-Type", client.register.contentType)
   res.end(await client.register.metrics())
 })
+*/
 
 app.listen(4001, () => {
   console.log("User service running on port 4001")
