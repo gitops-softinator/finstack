@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: finstack
+    namespace: finstack
   name: finstack-mongodb
 spec:
   replicas: 1
@@ -9,6 +11,8 @@ spec:
       app: finstack-mongodb
   template:
     metadata:
+  namespace: finstack
+    namespace: finstack
       labels:
         app: finstack-mongodb
     spec:

@@ -1,6 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: finstack
+    namespace: finstack
   name: finstack-user-service
 spec:
   type: ClusterIP

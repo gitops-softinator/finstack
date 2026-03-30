@@ -1,37 +1,65 @@
 # FinStack
 
-FinStack is a microservices based finacial platform.
+FinStack is a production-ready financial microservices platform designed for high availability and security.
 
-## Architecture
+## 🚀 Architecture
 
-This application is divided in to 6 main microservices:
+The application is built using a **Cloud-Native Microservices** approach, orchestrated on **AWS ECS Fargate**.
 
-- **API Gateway (3000)**: Single entry point that routes requests to internal services.
-- **Auth Service (4000)**: User authentication and registrations.
-- **User Service (4001)**: User profile management.
-- **Payment Service (4002)**: Payment processing simulation.
-- **Notification Service (4003)**: System notifications.
-- **Transaction Service (4004)**: Ledger records.
+### Microservices Catalog
+- **Frontend (Port 80)**: React-based client application.
+- **API Gateway (Port 3000)**: Single entry point using Express, routing requests to internal services.
+- **Auth Service (Port 4000)**: Secure user authentication and JWT-based registrations.
+- **User Service (Port 4001)**: Comprehensive user profile and metadata management.
+- **Payment Service (Port 4002)**: Real-time payment processing simulation.
+- **Notification Service (Port 4003)**: Multi-channel system notifications.
+- **Transaction Service (Port 4004)**: Ledger records and transaction history with MongoDB.
 
-## Quick Start (Local Setup)
+For a detailed deep-dive into the system design, network topology, and diagrams, please refer to the **[ARCHITECTURE.md](file:///home/gitops/Desktop/finstack/ARCHITECTURE.md)**.
 
-Use Docker Compose to start the application:
+---
+
+## 🏗️ Infrastructure & Deployment
+
+The platform is fully automated using **Infrastructure as Code (IaC)**.
+
+*   **Cloud Provider**: AWS
+*   **Orchestration**: ECS Fargate (Serverless)
+*   **Networking**: VPC with isolated Private Subnets & NAT Gateway.
+*   **Security**: Production-grade granular Security Groups (Least-Privilege).
+*   **Provisioning**: [Terraform](file:///home/gitops/Desktop/finstack/infra/)
+
+For setup and deployment instructions, see the **[Infrastructure README](file:///home/gitops/Desktop/finstack/infra/README.md)**.
+
+---
+
+## 🛠️ Quick Start (Local Setup)
+
+If you wish to run the stack locally for development:
 
 ```bash
+# Start all services using Docker Compose
 docker-compose up -d
 ```
 
-Access Frontend: `http://localhost:8080`\
-API Gateway: `http://localhost:3000`
+*   **Frontend**: `http://localhost:8080`
+*   **API Gateway**: `http://localhost:3000`
 
-## Project Structure
+---
 
-- `/services`: Backend microservices.
-- `/Frontend`: React client application.
-- `/gateway`: API Gateway.
+## 📂 Project Structure
 
-## Tech Stack
+- **[`/infra`](file:///home/gitops/Desktop/finstack/infra/)**: Terraform configuration and infrastructure documentation.
+- **[`/services`](file:///home/gitops/Desktop/finstack/services/)**: Backend microservices source code.
+- **[`/frontend`](file:///home/gitops/Desktop/finstack/frontend/)**: React client application.
+- **[`/gateway`](file:///home/gitops/Desktop/finstack/gateway/)**: API Gateway logic.
+
+---
+
+## 💻 Tech Stack
 
 - **Frontend**: React.js
 - **Backend**: Node.js & Express
 - **Database**: MongoDB (6.0)
+- **Infrastructure**: AWS (ECS, ALB, Cloud Map, VPC), Terraform
+- **CI/CD**: GitHub Actions & Docker Hub

@@ -8,6 +8,11 @@ resource "aws_subnet" "public" {
 	cidr_block = "10.0.1.0/24"
 	availability_zone = "eu-north-1a"
 	map_public_ip_on_launch = true
+
+	tags = {
+		"kubernetes.io/cluster/finstack-cluster" = "shared"
+		"kubernetes.io/role/elb"                  = "1"
+	}
 }
 
 resource "aws_subnet" "public_2" {
@@ -15,6 +20,11 @@ resource "aws_subnet" "public_2" {
 	cidr_block = "10.0.2.0/24"
 	availability_zone = "eu-north-1b"
 	map_public_ip_on_launch = true
+
+	tags = {
+		"kubernetes.io/cluster/finstack-cluster" = "shared"
+		"kubernetes.io/role/elb"                  = "1"
+	}
 }
 
 # Private subnets for ECS services
@@ -23,6 +33,11 @@ resource "aws_subnet" "private" {
 	cidr_block = "10.0.10.0/24"
 	availability_zone = "eu-north-1a"
 	map_public_ip_on_launch = false
+
+	tags = {
+		"kubernetes.io/cluster/finstack-cluster" = "shared"
+		"kubernetes.io/role/internal-elb"         = "1"
+	}
 }
 
 resource "aws_subnet" "private_2" {
@@ -30,6 +45,11 @@ resource "aws_subnet" "private_2" {
 	cidr_block = "10.0.11.0/24"
 	availability_zone = "eu-north-1b"
 	map_public_ip_on_launch = false
+
+	tags = {
+		"kubernetes.io/cluster/finstack-cluster" = "shared"
+		"kubernetes.io/role/internal-elb"         = "1"
+	}
 }
 
 resource "aws_internet_gateway" "gw" {

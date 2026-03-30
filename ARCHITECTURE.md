@@ -1,10 +1,10 @@
-# Finstack System Architecture
+# Finstack System Architecture (EKS Edition)
 
-This document describes the high-level architecture of the Finstack platform, a microservices-based financial application deployed on AWS using Terraform and ECS Fargate.
+This document describes the high-level architecture of the Finstack platform, a microservices-based financial application deployed on **AWS EKS (Elastic Kubernetes Service)** using Terraform and EKS Fargate.
 
 ## 1. High-Level Design
 
-The system follows a **Cloud-Native Microservices** pattern, where each functional area is isolated into its own service. All internal services are deployed in **Private Subnets** for maximum security, with an **API Gateway** acting as the single entry point for backend operations.
+The system follows a **Cloud-Native Microservices** pattern, where each functional area is isolated into its own Kubernetes Deployment. All services are deployed in **Private Subnets** using **EKS Fargate Profiles**, ensuring serverless compute with pod-level isolation.
 
 ### Architecture Diagram
 
@@ -16,14 +16,14 @@ graph TD
 
     subgraph "AWS VPC (10.0.0.0/16)"
         subgraph "Public Subnets"
-            ALB[Application Load Balancer]
+            ALB[AWS Application Load Balancer]
             NAT[NAT Gateway]
         end
 
-        subgraph "Private Subnets"
-            subgraph "ECS Cluster: finstack-cluster"
-                Frontend[Frontend Service]
-                Gateway[API Gateway]
+        subgraph "EKS Cluster (finstack-cluster)"
+            subgraph "Namespace: finstack (Fargate)"
+                Frontend[Frontend Pods]
+                Gateway[API Gateway Pods]
                 
                 subgraph "Backend Services"
                     Auth[Auth Service]
@@ -36,17 +36,17 @@ graph TD
         end
     end
 
-    %% Inbound Traffic
+    %% Inbound Traffic (via ALB Ingress Controller)
     User -- "HTTP :80" --> ALB
-    ALB -- "Port 80 (Path: /)" --> Frontend
-    ALB -- "Port 3000 (Path: /api/*)" --> Gateway
+    ALB -- "Path: /" --> Frontend
+    ALB -- "Path: /api/*" --> Gateway
     
-    %% Internal Routing
-    Gateway -- "Port 4000" --> Auth
-    Gateway -- "Port 4001" --> UserSvc
-    Gateway -- "Port 4002" --> Pay
-    Gateway -- "Port 4003" --> Notif
-    Gateway -- "Port 4004" --> Trans
+    %% Internal Routing (K8s Native DNS)
+    Gateway -- "finstack-auth-service" --> Auth
+    Gateway -- "finstack-user-service" --> UserSvc
+    Gateway -- "finstack-payment-service" --> Pay
+    Gateway -- "finstack-notification-service" --> Notif
+    Gateway -- "finstack-transaction-service" --> Trans
 
     %% Outbound Traffic (Updates/APIs)
     Backend Services -- "Outbound" --> NAT
@@ -60,34 +60,30 @@ graph TD
 ### **Networking & Connectivity**
 *   **VPC**: Isolated network boundary with a `10.0.0.0/16` CIDR block.
 *   **Subnets**:
-    *   **Public**: Hosts the ALB and NAT Gateway.
-    *   **Private**: Hosts all ECS Fargate tasks (Frontend, Gateway, and Services).
-*   **NAT Gateway**: Provides one-way internet egress for private services (to fetch updates or call external APIs) without allowing inbound connections.
-*   **Service Discovery**: Uses **AWS Cloud Map** (`finstack.local`) for internal DNS resolution between microservices.
+    *   **Public**: Hosts the **Managed ALB** and NAT Gateway.
+    *   **Private**: Hosts all EKS Fargate Pods.
+*   **Ingress Controller**: **AWS Load Balancer Controller** automatically provisions the ALB based on the `finstack-ingress` resource.
+*   **Service Discovery**: Uses **Kubernetes Native DNS** (CoreDNS) for internal resolution (e.g., `http://finstack-auth-service:4000`).
 
-### **Compute (ECS Fargate)**
-All services run on **AWS Fargate**, a serverless container engine.
-*   **Scaling**: Each service is configured with a `desired_count` (currently 2 for Frontend/Gateway and 1 for others for cost-optimization during dev).
-*   **Logging**: Centralized logs for all containers are streamed to **AWS CloudWatch** under the `/ecs/` log group prefix.
+### **Compute (EKS Fargate)**
+All services run on **EKS Fargate**, providing serverless Kubernetes.
+*   **Isolation**: Each Pod runs in its own isolated compute environment (Micro-VM).
+*   **Scaling**: Managed by the EKS control plane based on deployment replicas.
+*   **Logging**: Integrated with **Fluent Bit** to stream logs to CloudWatch.
 
 ---
 
 ## 3. Security Model (Production-Grade)
 
-The architecture implements a strict **Least-Privilege Security Group** model:
+The architecture uses **IAM Roles for Service Accounts (IRSA)** for secure AWS API access and granular Security Groups:
 
-| Component | Security Group | Ingress Source | Allowed Port |
-| :--- | :--- | :--- | :--- |
-| **ALB** | `alb_sg` | Everywhere (0.0.0.0/0) | 80, 443 |
-| **Frontend** | `frontend_sg` | `alb_sg` | 80 |
-| **Gateway** | `gateway_sg` | `alb_sg` | 3000 |
-| **Auth Service** | `auth_sg` | `gateway_sg` | 4000 |
-| **User Service** | `user_sg` | `gateway_sg` | 4001 |
-| **Payment Service** | `payment_sg` | `gateway_sg` | 4002 |
-| **Other Backends** | `*_sg` | `gateway_sg` | 4003, 4004 |
+| Component | Ingress Source | Allowed Port |
+| :--- | :--- | :--- |
+| **ALB** | Everywhere (0.0.0.0/0) | 80, 443 |
+| **Pods (Fargate)** | Managed by K8s Services | 80, 3000, 4000-4004 |
 
 > [!IMPORTANT]
-> **No direct internet access**: Backend microservices have NO public IP addresses and cannot be reached directly from the internet. They ONLY accept traffic from the API Gateway.
+> **Zero Trust Internal Networking**: Services communicate using internal ClusterIPs. The API Gateway is the only backend service exposed to the ALB.
 
 ---
 
@@ -96,16 +92,16 @@ The architecture implements a strict **Least-Privilege Security Group** model:
 | Service | Port | Responsibilities |
 | :--- | :--- | :--- |
 | **Frontend** | 80 | User Interface (React/Next.js) |
-| **API Gateway** | 3000 | Routing, Auth delegation, Load balancing across services |
-| **Auth Service** | 4000 | User Authentication, JWT management, Registration |
-| **User Service** | 4001 | Profile management and user metadata |
-| **Payment Service** | 4002 | Transaction processing and banking gateway integration |
-| **Notification** | 4003 | Email/SMS alerts and push notifications |
-| **Transaction** | 4004 | Ledger management and transaction history (MongoDB) |
+| **API Gateway** | 3000 | Routing, Auth delegation, Load balancing |
+| **Auth Service** | 4000 | User Authentication & Registration |
+| **User Service** | 4001 | Profile management |
+| **Payment Service** | 4002 | Transaction processing |
+| **Notification** | 4003 | Multi-channel alerts |
+| **Transaction** | 4004 | Ledger management (MongoDB) |
 
 ---
 
 ## 5. Deployment & CI/CD
-*   **Docker Hub**: Images are stored in the `gitopssoftinator/finstack-*` repository.
-*   **GitHub Actions**: Automates building and pushing images to Docker Hub.
-*   **Terraform**: Manages all infrastructure as code (IaC), located in the `/infra` directory.
+*   **Infrastructure**: Managed by [Terraform](file:///home/gitops/Desktop/finstack/infra/) (VPC, EKS, IAM, Helm).
+*   **Application**: Managed by [Kubernetes Manifests](file:///home/gitops/Desktop/finstack/k8s/) via `kubectl`.
+*   **CI/CD**: GitHub Actions builds Docker images and pushes to Docker Hub.
