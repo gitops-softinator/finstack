@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-transaction-service
+  namespace: finstack
 spec:
-  type: ClusterIP
   selector:
-    app: finstack-transation
+    app: finstack-transaction
   ports:
-  - port: 4004
-    targetPort: 4004
+    - protocol: TCP
+      port: 4004
+      targetPort: 4004
+  type: ClusterIP

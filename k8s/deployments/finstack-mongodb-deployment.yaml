@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-mongodb
+  namespace: finstack
 spec:
   replicas: 1
   selector:
@@ -11,13 +10,11 @@ spec:
       app: finstack-mongodb
   template:
     metadata:
-  namespace: finstack
-    namespace: finstack
       labels:
         app: finstack-mongodb
     spec:
       containers:
-        - name: finstack-mongodb
-          image: mongo:7
-          ports:
-          - containerPort: 27017
+      - name: finstack-mongodb
+        image: mongo:6.0
+        ports:
+        - containerPort: 27017

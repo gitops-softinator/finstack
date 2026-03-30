@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-payment
+  namespace: finstack
 spec:
   replicas: 1
   selector:
@@ -11,13 +10,11 @@ spec:
       app: finstack-payment
   template:
     metadata:
-  namespace: finstack
-    namespace: finstack
       labels:
         app: finstack-payment
     spec:
       containers:
-        - name: finstack-payment
-          image: gitopssoftinator/finstack-payment-service:1.0
-          ports:
-          - containerPort: 4002
+      - name: finstack-payment
+        image: gitopssoftinator/finstack-payment-service:1.1
+        ports:
+        - containerPort: 4002

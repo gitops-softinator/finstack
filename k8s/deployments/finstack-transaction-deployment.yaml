@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-transaction
+  namespace: finstack
 spec:
   replicas: 1
   selector:
@@ -11,16 +10,14 @@ spec:
       app: finstack-transaction
   template:
     metadata:
-  namespace: finstack
-    namespace: finstack
       labels:
         app: finstack-transaction
     spec:
       containers:
-        - name: finstack-transaction
-          image: gitopssoftinator/finstack-transaction-service:1.1
-          env:
-          - name: MONGO_URI
-            value: mongodb://finstack-mongodb-service:27017/finstack
-          ports:
-          - containerPort: 4004
+      - name: finstack-transaction
+        image: gitopssoftinator/finstack-transaction-service:1.1
+        env:
+        - name: MONGO_URI
+          value: mongodb://finstack-mongodb-service:27017/finstack
+        ports:
+        - containerPort: 4004

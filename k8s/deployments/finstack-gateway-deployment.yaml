@@ -1,23 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-gateway
+  namespace: finstack
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: finstack-gateway
   template:
     metadata:
-  namespace: finstack
-    namespace: finstack
       labels:
         app: finstack-gateway
     spec:
       containers:
       - name: finstack-gateway
-        image: gitopssoftinator/finstack-gateway:1.2
+        image: gitopssoftinator/finstack-gateway:1.1
         ports:
-          - containerPort: 3000
+        - containerPort: 3000
+        env:
+        - name: AUTH_SERVICE_URL
+          value: "http://finstack-auth-service:4000"
+        - name: USER_SERVICE_URL
+          value: "http://finstack-user-service:4001"
+        - name: PAYMENT_SERVICE_URL
+          value: "http://finstack-payment-service:4002"
+        - name: NOTIFICATION_SERVICE_URL
+          value: "http://finstack-notification-service:4003"
+        - name: TRANSACTION_SERVICE_URL
+          value: "http://finstack-transaction-service:4004"

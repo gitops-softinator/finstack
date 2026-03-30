@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: finstack
-    namespace: finstack
   name: finstack-auth
+  namespace: finstack
 spec:
   replicas: 1
   selector:
@@ -11,8 +10,6 @@ spec:
       app: finstack-auth
   template:
     metadata:
-  namespace: finstack
-    namespace: finstack
       labels:
         app: finstack-auth
     spec:
