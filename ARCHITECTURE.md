@@ -103,5 +103,5 @@ The architecture uses **IAM Roles for Service Accounts (IRSA)** for secure AWS A
 
 ## 5. Deployment & CI/CD
 *   **Infrastructure**: Managed by [Terraform](file:///home/gitops/Desktop/finstack/infra/) (VPC, EKS, IAM, Helm).
-*   **Application**: Managed by [Kubernetes Manifests](file:///home/gitops/Desktop/finstack/k8s/) via `kubectl`.
+*   **Application**: Managed by [Kubernetes Manifests](file:///home/gitops/Desktop/finstack/k8s/) (organized into `deployments/`, `services/`, and `ingress/`).
 *   **CI/CD**: GitHub Actions builds Docker images and pushes to Docker Hub.

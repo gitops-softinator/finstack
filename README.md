@@ -50,7 +50,7 @@ docker-compose up -d
 ## 📂 Project Structure
 
 - **[`/infra`](file:///home/gitops/Desktop/finstack/infra/)**: Terraform configuration and infrastructure documentation.
-- **[`/k8s`](file:///home/gitops/Desktop/finstack/k8s/)**: Kubernetes manifests for application deployment.
+- **[`/k8s`](file:///home/gitops/Desktop/finstack/k8s/)**: Kubernetes manifests organized by type (deployments, services, ingress).
 - **[`/services`](file:///home/gitops/Desktop/finstack/services/)**: Backend microservices source code.
 - **[`/frontend`](file:///home/gitops/Desktop/finstack/frontend/)**: React client application.
 - **[`/gateway`](file:///home/gitops/Desktop/finstack/gateway/)**: API Gateway logic.
