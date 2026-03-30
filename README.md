@@ -4,7 +4,7 @@ FinStack is a production-ready financial microservices platform designed for hig
 
 ## 🚀 Architecture
 
-The application is built using a **Cloud-Native Microservices** approach, orchestrated on **AWS ECS Fargate**.
+The application is built using a **Cloud-Native Microservices** approach, orchestrated on **AWS EKS (Elastic Kubernetes Service)** using **EKS Fargate**.
 
 ### Microservices Catalog
 - **Frontend (Port 80)**: React-based client application.
@@ -24,10 +24,10 @@ For a detailed deep-dive into the system design, network topology, and diagrams,
 The platform is fully automated using **Infrastructure as Code (IaC)**.
 
 *   **Cloud Provider**: AWS
-*   **Orchestration**: ECS Fargate (Serverless)
-*   **Networking**: VPC with isolated Private Subnets & NAT Gateway.
-*   **Security**: Production-grade granular Security Groups (Least-Privilege).
+*   **Orchestration**: EKS Fargate (Serverless Kubernetes)
+*   **Networking**: VPC with isolated Private Subnets, NAT Gateway & AWS Load Balancer Controller.
 *   **Provisioning**: [Terraform](file:///home/gitops/Desktop/finstack/infra/)
+*   **Deployment**: [Kubernetes Manifests](file:///home/gitops/Desktop/finstack/k8s/)
 
 For setup and deployment instructions, see the **[Infrastructure README](file:///home/gitops/Desktop/finstack/infra/README.md)**.
 
@@ -50,6 +50,7 @@ docker-compose up -d
 ## 📂 Project Structure
 
 - **[`/infra`](file:///home/gitops/Desktop/finstack/infra/)**: Terraform configuration and infrastructure documentation.
+- **[`/k8s`](file:///home/gitops/Desktop/finstack/k8s/)**: Kubernetes manifests for application deployment.
 - **[`/services`](file:///home/gitops/Desktop/finstack/services/)**: Backend microservices source code.
 - **[`/frontend`](file:///home/gitops/Desktop/finstack/frontend/)**: React client application.
 - **[`/gateway`](file:///home/gitops/Desktop/finstack/gateway/)**: API Gateway logic.
@@ -61,5 +62,5 @@ docker-compose up -d
 - **Frontend**: React.js
 - **Backend**: Node.js & Express
 - **Database**: MongoDB (6.0)
-- **Infrastructure**: AWS (ECS, ALB, Cloud Map, VPC), Terraform
+- **Infrastructure**: AWS (EKS, ALB, VPC), Terraform
 - **CI/CD**: GitHub Actions & Docker Hub
