@@ -1,22 +1,25 @@
-resource "aws_ecs_service" "frontend" {
-	name = "frontend"
-	cluster = aws_ecs_cluster.main.id
-	task_definition = aws_ecs_task_definition.frontend.arn
-	launch_type = "FARGATE"
+# Outputs for accessing deployed resources
+output "alb_dns_name" {
+	description = "DNS name of the load balancer"
+	value = aws_lb.frontend_alb.dns_name
+}
 
-	desired_count = 1
+output "alb_arn" {
+	description = "ARN of the load balancer"
+	value = aws_lb.frontend_alb.arn
+}
 
-	network_configuration {
-		subnets = [aws_subnet.public.id]
-		assign_public_ip = true
-		security_groups = [aws_security_group.frontend_sg.id]
-	}
+output "ecs_cluster_name" {
+	description = "Name of the ECS cluster"
+	value = aws_ecs_cluster.main.name
+}
 
-	load_balancer {
-		target_group_arn = aws_lb_target_group.frontend_tg.arn
-		container_name = "frontend"
-		container_port = 80
-	}
+output "ecs_service_name" {
+	description = "Name of the frontend ECS service"
+	value = aws_ecs_service.frontend.name
+}
 
-	depends_on = [aws_lb_listener.frontend_listener]
+output "nat_gateway_ip" {
+	description = "Elastic IP of NAT Gateway for private subnet egress"
+	value = aws_eip.nat.public_ip
 }

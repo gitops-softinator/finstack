@@ -6,23 +6,27 @@ const app = express()
 
 app.use(express.json())
 
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://finstack-auth-service:4000"
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || "http://finstack-user-service:4001"
+const PAYMENT_SERVICE_URL = process.env.PAYMENT_SERVICE_URL || "http://finstack-payment-service:4002"
+
 app.post("/auth/login", async (req,res)=>{
-  const response = await axios.post("http://finstack-auth-service:4000/login",req.body)
+  const response = await axios.post(`${AUTH_SERVICE_URL}/login`,req.body)
   res.send(response.data)
 })
 
 app.post("/auth/register", async (req,res)=>{
-  const response = await axios.post("http://finstack-auth-service:4000/register", req.body)
+  const response = await axios.post(`${AUTH_SERVICE_URL}/register`, req.body)
   res.send(response.data)
 })
 
 app.post("/users", async (req,res)=>{
-  const response = await axios.post("http://finstack-user-service:4001/users",req.body)
+  const response = await axios.post(`${USER_SERVICE_URL}/users`,req.body)
   res.send(response.data)
 })
 
 app.post("/pay", async (req,res)=>{
-  const response = await axios.post("http://finstack-payment-service:4002/pay",req.body)
+  const response = await axios.post(`${PAYMENT_SERVICE_URL}/pay`,req.body)
   res.send(response.data)
 })
 
@@ -69,7 +73,7 @@ app.use((req, res, next) => {
 
 app.get("/health", async (req, res) => {
   try {
-    await axios.get("http://fintsack-auth-service:4000/health");
+    await axios.get(`${AUTH_SERVICE_URL}/health`);
     res.status(200).json({
       status: "UP",
       service: "finstack-gateway"
@@ -80,6 +84,10 @@ app.get("/health", async (req, res) => {
       dependency: "finstack-auth-service"
     });
   }
+});
+
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
 });
 
 
