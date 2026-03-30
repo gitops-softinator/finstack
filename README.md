@@ -15,7 +15,7 @@ The application is built using a **Cloud-Native Microservices** approach, orches
 - **Notification Service (Port 4003)**: Multi-channel system notifications.
 - **Transaction Service (Port 4004)**: Ledger records and transaction history with MongoDB.
 
-For a detailed deep-dive into the system design, network topology, and diagrams, please refer to the **[ARCHITECTURE.md](file:///home/gitops/Desktop/finstack/ARCHITECTURE.md)**.
+For a detailed deep-dive into the system design, network topology, and diagrams, please refer to the **[ARCHITECTURE.md](file:///home/gitops/Desktop/finstack/ARCHITECTURE.md)**. For a beginner-friendly conceptual overview, see the **[CONCEPT_GUIDE.md](file:///home/gitops/Desktop/finstack/CONCEPT_GUIDE.md)**.
 
 ---
 
