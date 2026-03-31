@@ -1,0 +1,16 @@
+persistence:
+  enabled: true
+  storageClassName: efs-sc
+  size: 10Gi
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::256461400092:role/finstack-efs-csi-driver-role
+service:
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
+deploymentStrategy:
+  type: Recreate
+

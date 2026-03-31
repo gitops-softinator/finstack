@@ -1,0 +1,19 @@
+server:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::256461400092:role/finstack-efs-csi-driver-role
+  persistentVolume:
+    enabled: true
+    storageClass: efs-sc
+    size: 20Gi
+  service:
+    type: ClusterIP
+alertmanager:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::256461400092:role/finstack-efs-csi-driver-role
+  persistentVolume:
+    enabled: true
+    storageClass: efs-sc
+    size: 2Gi
+

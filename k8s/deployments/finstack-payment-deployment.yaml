@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: finstack-payment
-        image: gitopssoftinator/finstack-payment-service:1.1
+        image: gitopssoftinator/finstack-payment-service:latest
         ports:
         - containerPort: 4002

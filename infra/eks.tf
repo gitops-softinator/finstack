@@ -99,3 +99,15 @@ resource "aws_eks_fargate_profile" "kube_system" {
     namespace = "kube-system"
   }
 }
+
+# Fargate Profile for monitoring namespace
+resource "aws_eks_fargate_profile" "monitoring" {
+  cluster_name           = aws_eks_cluster.main.name
+  fargate_profile_name   = "monitoring"
+  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
+  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
+
+  selector {
+    namespace = "monitoring"
+  }
+}

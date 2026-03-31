@@ -1,13 +1,4 @@
 # Outputs for accessing deployed resources
-output "alb_dns_name" {
-  description = "DNS name of the load balancer"
-  value       = aws_lb.frontend_alb.dns_name
-}
-
-output "alb_arn" {
-  description = "ARN of the load balancer"
-  value       = aws_lb.frontend_alb.arn
-}
 
 output "nat_gateway_ip" {
   description = "Elastic IP of NAT Gateway for private subnet egress"
@@ -22,4 +13,9 @@ output "eks_cluster_name" {
 output "eks_cluster_endpoint" {
   description = "The endpoint for the EKS cluster"
   value       = aws_eks_cluster.main.endpoint
+}
+
+output "efs_csi_driver_role_arn" {
+  description = "The ARN of the IAM role for the EFS CSI driver"
+  value       = aws_iam_role.efs_csi_driver.arn
 }

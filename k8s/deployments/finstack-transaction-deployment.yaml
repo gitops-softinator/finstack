@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: finstack-transaction
-        image: gitopssoftinator/finstack-transaction-service:1.1
+        image: gitopssoftinator/finstack-transaction-service:latest
         env:
         - name: MONGO_URI
           value: mongodb://finstack-mongodb-service:27017/finstack

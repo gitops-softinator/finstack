@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: finstack-auth
-        image: gitopssoftinator/finstack-auth-service:1.1
+        image: gitopssoftinator/finstack-auth-service:latest
         env:
         - name: MONGO_URI
           value: mongodb://finstack-mongodb-service:27017/finstack

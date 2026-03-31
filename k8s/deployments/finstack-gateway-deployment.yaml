@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: finstack-gateway
-        image: gitopssoftinator/finstack-gateway:1.1
+        image: gitopssoftinator/finstack-gateway:latest
         ports:
         - containerPort: 3000
         env:
