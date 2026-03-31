@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 resource "aws_eks_cluster" "main" {
   name     = "finstack-cluster"
   role_arn = aws_iam_role.eks_cluster.arn
-  version  = "1.29"
+  version  = "1.31"
 
   vpc_config {
     subnet_ids = [
@@ -34,6 +34,7 @@ resource "aws_eks_cluster" "main" {
       aws_subnet.private.id,
       aws_subnet.private_2.id
     ]
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
   }
 
   depends_on = [

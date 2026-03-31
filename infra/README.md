@@ -27,7 +27,7 @@ To provision the entire environment, follow these steps:
 
 2.  **Apply Configuration**:
     ```bash
-    terraform apply "tfplan_eks_final_clean"
+    terraform apply "finstack_eks_deployment.plan"
     ```
     *This will create the VPC, EKS Cluster, Fargate Profiles, and install the Load Balancer Controller via Helm.*
 

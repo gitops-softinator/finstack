@@ -29,3 +29,37 @@ resource "aws_security_group" "alb_sg" {
     Name = "finstack-alb-sg"
   }
 }
+
+# EKS Cluster Security Group
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = "eks-cluster-sg"
+  description = "Security group for EKS Cluster and Fargate pods"
+  vpc_id      = aws_vpc.main.id
+
+  # Allow all traffic from ALB
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  # Allow all traffic from self (Intra-cluster communication)
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "finstack-eks-cluster-sg"
+  }
+}
