@@ -34,3 +34,8 @@ output "eks_cluster_ca_data" {
   description = "EKS Cluster CA Data for Helm Provider"
   value       = aws_eks_cluster.main.certificate_authority[0].data
 }
+
+output "eso_role_arn" {
+  description = "IAM Role ARN for External Secrets Operator"
+  value       = aws_iam_role.external_secrets.arn
+}

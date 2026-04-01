@@ -123,3 +123,15 @@ resource "aws_eks_fargate_profile" "argocd" {
     namespace = "argocd"
   }
 }
+
+# Fargate Profile for External Secrets
+resource "aws_eks_fargate_profile" "external_secrets" {
+  cluster_name           = aws_eks_cluster.main.name
+  fargate_profile_name   = "external-secrets"
+  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
+  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
+
+  selector {
+    namespace = "external-secrets"
+  }
+}
