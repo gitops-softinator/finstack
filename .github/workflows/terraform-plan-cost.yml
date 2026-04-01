@@ -45,6 +45,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: State Cleanup (Fixing cluster unreachable)
+        run: terraform state rm helm_release.aws_load_balancer_controller || true
+
       - name: Terraform Plan
         # Run plan securely without making changes
         run: terraform plan -out=plan.binary
