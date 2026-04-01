@@ -111,3 +111,15 @@ resource "aws_eks_fargate_profile" "monitoring" {
     namespace = "monitoring"
   }
 }
+
+# Fargate Profile for ArgoCD
+resource "aws_eks_fargate_profile" "argocd" {
+  cluster_name           = aws_eks_cluster.main.name
+  fargate_profile_name   = "argocd"
+  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
+  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
+
+  selector {
+    namespace = "argocd"
+  }
+}
