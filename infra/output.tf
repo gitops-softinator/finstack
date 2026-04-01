@@ -19,3 +19,18 @@ output "efs_csi_driver_role_arn" {
   description = "The ARN of the IAM role for the EFS CSI driver"
   value       = aws_iam_role.efs_csi_driver.arn
 }
+
+output "vpc_id" {
+  description = "VPC ID needed for ALB Controller"
+  value       = aws_vpc.main.id
+}
+
+output "lb_controller_role_arn" {
+  description = "IAM Role ARN for AWS Load Balancer Controller"
+  value       = aws_iam_role.lb_controller.arn
+}
+
+output "eks_cluster_ca_data" {
+  description = "EKS Cluster CA Data for Helm Provider"
+  value       = aws_eks_cluster.main.certificate_authority[0].data
+}

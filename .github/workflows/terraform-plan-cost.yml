@@ -1,0 +1,67 @@
+name: "Terraform Plan & Cost Estimate"
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-plan-cost:
+    name: "Terraform Plan & Infracost"
+    runs-on: ubuntu-latest
+    
+    # Target the Base Infrastructure layer where billable resources lie
+    defaults:
+      run:
+        working-directory: ./infra
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        # Run plan securely without making changes
+        run: terraform plan -out=plan.binary
+
+      - name: Terraform Show (Convert to JSON)
+        run: terraform show -json plan.binary > plan.json
+
+      - name: Generate Infracost Cost Breakdown
+        # Produce a JSON cost breakdown for the GitHub PR Comment tool
+        run: |
+          infracost breakdown --path plan.json \
+                              --format json \
+                              --out-file /tmp/infracost.json
+          
+          # Print the beautiful ASCII table to the GitHub Actions terminal logs
+          infracost breakdown --path plan.json
+
+      - name: Post Infracost Comment to PR
+        if: github.event_name == 'pull_request'
+        uses: infracost/actions/comment@v2
+        with:
+          path: /tmp/infracost.json
+          behavior: update # Overwrite the previous comment on new commits

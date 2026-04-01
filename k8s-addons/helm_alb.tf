@@ -8,7 +8,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "clusterName"
-    value = aws_eks_cluster.main.name
+    value = data.terraform_remote_state.infra.outputs.eks_cluster_name
   }
 
   set {
@@ -23,21 +23,16 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = aws_iam_role.lb_controller.arn
+    value = data.terraform_remote_state.infra.outputs.lb_controller_role_arn
   }
 
   set {
     name  = "region"
-    value = var.aws_region
+    value = "eu-north-1"
   }
 
   set {
     name  = "vpcId"
-    value = aws_vpc.main.id
+    value = data.terraform_remote_state.infra.outputs.vpc_id
   }
-
-  depends_on = [
-    aws_eks_fargate_profile.kube_system,
-    aws_iam_role_policy_attachment.lb_controller_attach
-  ]
 }
