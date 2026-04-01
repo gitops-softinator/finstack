@@ -135,3 +135,24 @@ resource "aws_eks_fargate_profile" "external_secrets" {
     namespace = "external-secrets"
   }
 }
+
+# Add IAM Policy for Native Fargate CloudWatch Logging
+resource "aws_iam_role_policy" "fargate_logging" {
+  name = "finstack-fargate-logging-policy"
+  role = aws_iam_role.fargate_execution.name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
