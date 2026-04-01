@@ -12,6 +12,9 @@ jobs:
   terraform-plan-cost:
     name: "Terraform Plan & Infracost"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     
     # Target the Base Infrastructure layer where billable resources lie
     defaults:
@@ -20,22 +23,22 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
 
       - name: Setup Infracost
-        uses: infracost/actions/setup@v2
+        uses: infracost/actions/setup@v3
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
@@ -61,7 +64,7 @@ jobs:
 
       - name: Post Infracost Comment to PR
         if: github.event_name == 'pull_request'
-        uses: infracost/actions/comment@v2
+        uses: infracost/actions/comment@v3
         with:
           path: /tmp/infracost.json
           behavior: update # Overwrite the previous comment on new commits
