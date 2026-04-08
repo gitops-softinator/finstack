@@ -1,0 +1,43 @@
+# Finstack Project: Essential Interview Study List 📚
+
+Ye un topics ki list hai jo aapko Finstack (ECS to EKS Migration) project ko defend karne aur kisi bhi Senior DevOps/SRE interview ko clear karne ke liye zaroor padhne chahiye. Isme aapke purane topics bhi include kar diye gaye hain.
+
+---
+
+## 1. Kubernetes & EKS Core Concepts (Must Study)
+Kyunki aapne ECS se EKS par migrate kiya hai, interviewer aapko K8s architecture par grill karega:
+- **EKS Components:** Control Plane vs Data Plane (Managed Node Groups).
+- **Core Objects:** Pods, Deployments, Services (ClusterIP vs NodePort vs LoadBalancer), Ingress.
+- **ECS vs EKS Differences:** Why EKS is better? Fargate vs EC2 Managed Nodes.
+- **DaemonSets:** Ye kya hote hain aur logs/monitoring ke liye kyun zaroori hain? (Important kyuni ECS mein ye nahi tha).
+- **Persistent Storage:** PV (Persistent Volume), PVC (Persistent Volume Claim), aur StorageClass kya hote hain? EFS CSI driver kaise kaam karta hai?
+
+## 2. Networking & Security in AWS/EKS
+ECS to EKS migration mein network and security ek major layer hai:
+- **VPC Subnetting:** Public vs Private Subnets, NAT Gateway ka purpose.
+- **IRSA (IAM Roles for Service Accounts):** Ye sabse zyada pucha jayega! EKS mein pods AWS resources (jaise S3, Secrets Manager, ya ALB) ka access securely kaise lete hain bina access keys ke?
+- **AWS Load Balancer Controller:** Ingress controller HTTP(s) traffic ko pods tak kaise route karta hai.
+
+## 3. Deployment & GitOps Strategies
+Aapke purane list se related aur ArgoCD implementation ke around:
+- **Types of K8s Deployments:** `RollingUpdate` (zero downtime) vs `Recreate` (Jo aapne Grafana SQLite DB lock issue solve karne ke liye use kiya).
+- **Git Deployment Strategies:** Blue-Green, Canary, aur Rolling deployments mein kya farq hai?
+- **Git Branch Management:** Feature Branching, GitFlow, aur Trunk-based development.
+- **GitOps with ArgoCD:** Push vs Pull deployment model. K8s cluster Git repo ko track karke drift kaise resolve karta hai (Self-healing).
+
+## 4. Observability & Logging (Phase 3 of your project)
+- **Prometheus & Grafana:** Time-series databases kya hote hain, Metrics (CPU/Memory utilization) kaise scrape hote hain.
+- **Log Aggregation (FluentBit):** Container (`stdout`/`stderr`) logs capture karke CloudWatch mein bhejna kyun zaroori hai. Log filtering and parsing.
+
+## 5. Infrastructure as Code (Terraform)
+- **Terraform State Management:** `terraform.tfstate` kya hota hai? S3 aur DynamoDB se State Locking kyun zaroori hai ek team environment mein.
+- **Modules and Remote State:** `terraform_remote_state` ka use karke aapne infra aur k8s-addons ko decouple kaise kiya.
+- **Drift Detection:** Agar koi manually AWS console se change kar de toh Terraform use kaise detect karta hai aur `terraform apply` par kya hota hai.
+
+## 6. Secrets Management
+- **External Secrets Operator (ESO):** Kubernetes mein plain base64 yaml secrets unsafe kyun hain? AWS Secrets Manager se sync karna kyu zaroori hai.
+- Kubernetes native `Secret` vs Vault/AWS Secrets Manager.
+
+---
+### 💡 Interview Tip:
+In topics ki sirf "Definitions" yaad mat karna. Jab bhi inke bare mein pado, hamesha khud se poochna: *"Finstack mein maine iska use kahan aur kyun kiya tha?"* (e.g. "Maine Recreate deployment Grafana ke EFS lock error ke liye use kiya"). Interviewer wahi sunna chahta hai!
