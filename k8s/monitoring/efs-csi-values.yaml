@@ -6,38 +6,12 @@ controller:
     name: efs-csi-controller-sa
     annotations:
       eks.amazonaws.com/role-arn: arn:aws:iam::256461400092:role/finstack-efs-csi-driver-role
-  # Fargate does NOT support privileged containers
-  containerSecurityContext:
-    privileged: false
-    allowPrivilegeEscalation: false
-  securityContext:
-    runAsNonRoot: false
-    runAsUser: 0
-    runAsGroup: 0
-    fsGroup: 0
   resources:
     requests:
       cpu: 100m
       memory: 128Mi
-  tolerations:
-    - key: "eks.amazonaws.com/compute-type"
-      operator: "Equal"
-      value: "fargate"
-      effect: "NoSchedule"
-  # Disable delete-access-point-root-dir since it requires privileged mode
-  deleteAccessPointRootDir: false
-
-sidecars:
-  livenessProbe:
-    securityContext:
-      readOnlyRootFilesystem: true
-      allowPrivilegeEscalation: false
-  csiProvisioner:
-    securityContext:
-      readOnlyRootFilesystem: true
-      allowPrivilegeEscalation: false
 
 node:
-  enabled: false  # Fargate manages its own node driver
+  enabled: true  # Node DaemonSet runs on managed node group EC2 instances
 
 storageClasses: []  # We manage StorageClass manually

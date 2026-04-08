@@ -1,6 +1,6 @@
-# Finstack EKS Fargate Deployment Guide 🚀
+# Finstack EKS Deployment Guide 🚀
 
-Ye document ek step-by-step guide hai jise follow karke koi bhi naya engineer is poore Finstack application ko scratch se AWS EKS Fargate par deploy kar sakta hai.
+Ye document ek step-by-step guide hai jise follow karke koi bhi naya engineer is poore Finstack application ko scratch se AWS EKS par deploy kar sakta hai.
 
 ---
 
@@ -14,7 +14,7 @@ Aapke system ya CI/CD server par ye tools install hone chahiye:
 ---
 
 ## Step 1: Infrastructure Provisioning (Terraform)
-Sabse pehle hume AWS cloud mein foundation (VPC, Subnets, EKS Cluster, Fargate Profiles, IAM Roles, EFS) banani hai.
+Sabse pehle hume AWS cloud mein foundation (VPC, Subnets, EKS Cluster, Managed Node Groups, IAM Roles, EFS) banani hai.
 
 ```bash
 # 1. Terraform directory mein jayein
@@ -32,19 +32,19 @@ terraform apply -auto-approve
 
 ---
 
-## Step 2: Cluster Connection & CoreDNS Patching
-Infrastructure banne ke baad, `kubectl` ko aapke naye EKS cluster se connect karna hoga, aur CoreDNS ko Fargate par chalne ke liye patch karna hoga (kyunki by default CoreDNS EC2 dhoondhta hai).
+## Step 2: Cluster Connection
+Infrastructure banne ke baad, `kubectl` ko aapke naye EKS cluster se connect karna hoga.
 
 ```bash
 # 1. Kubeconfig update karein
 aws eks update-kubeconfig --region eu-north-1 --name finstack-cluster
 
-# 2. CoreDNS annotation remove karein taaki Fargate par schedule ho sake
-kubectl patch deployment coredns -n kube-system --type json -p='[{"op": "remove", "path": "/spec/template/metadata/annotations/eks.amazonaws.com~1compute-type"}]'
-
-# 3. Restarts the CoreDNS Rollout
-kubectl rollout restart -n kube-system deployment coredns
+# 2. Verify nodes are ready
+kubectl get nodes
 ```
+
+> [!TIP]
+> Managed Node Group ke nodes ko ready hone mein 2-3 minutes lag sakte hain. `kubectl get nodes` se verify karein ki nodes `Ready` state mein hain.
 
 ---
 
@@ -66,7 +66,7 @@ kubectl apply -f deployments/
 ```
 
 > [!TIP]
-> `kubectl get pods -n finstack` chalakar verify karein ki sabhi pods `Running` state mein hain. Fargate par pods aane me thoda time lagta hai (`Pending` state).
+> `kubectl get pods -n finstack` chalakar verify karein ki sabhi pods `Running` state mein hain.
 
 ---
 

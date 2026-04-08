@@ -1,10 +1,10 @@
 # Finstack System Architecture (EKS Edition)
 
-This document describes the high-level architecture of the Finstack platform, a microservices-based financial application deployed on **AWS EKS (Elastic Kubernetes Service)** using Terraform and EKS Fargate.
+This document describes the high-level architecture of the Finstack platform, a microservices-based financial application deployed on **AWS EKS (Elastic Kubernetes Service)** using Terraform and EKS Managed Node Groups.
 
 ## 1. High-Level Design
 
-The system follows a **Cloud-Native Microservices** pattern, where each functional area is isolated into its own Kubernetes Deployment. All services are deployed in **Private Subnets** using **EKS Fargate Profiles**, ensuring serverless compute with pod-level isolation.
+The system follows a **Cloud-Native Microservices** pattern, where each functional area is isolated into its own Kubernetes Deployment. All services are deployed in **Private Subnets** using **EKS Managed Node Groups**, providing scalable EC2-based compute with auto-scaling capabilities.
 
 ### Architecture Diagram
 
@@ -21,7 +21,7 @@ graph TD
         end
 
         subgraph "EKS Cluster (finstack-cluster)"
-            subgraph "Namespace: finstack (Fargate)"
+            subgraph "Namespace: finstack (Managed Nodes)"
                 Frontend[Frontend Pods]
                 Gateway[API Gateway Pods]
                 
@@ -61,15 +61,15 @@ graph TD
 *   **VPC**: Isolated network boundary with a `10.0.0.0/16` CIDR block.
 *   **Subnets**:
     *   **Public**: Hosts the **Managed ALB** and NAT Gateway.
-    *   **Private**: Hosts all EKS Fargate Pods.
+    *   **Private**: Hosts all EKS worker node EC2 instances.
 *   **Ingress Controller**: **AWS Load Balancer Controller** automatically provisions the ALB based on the `finstack-ingress` resource.
 *   **Service Discovery**: Uses **Kubernetes Native DNS** (CoreDNS) for internal resolution (e.g., `http://finstack-auth-service:4000`).
 
-### **Compute (EKS Fargate)**
-All services run on **EKS Fargate**, providing serverless Kubernetes.
-*   **Isolation**: Each Pod runs in its own isolated compute environment (Micro-VM).
-*   **Scaling**: Managed by the EKS control plane based on deployment replicas.
-*   **Logging**: Integrated with **Fluent Bit** to stream logs to CloudWatch.
+### **Compute (EKS Managed Node Groups)**
+All services run on **EKS Managed Node Groups**, providing EC2-based Kubernetes compute.
+*   **Instance Type**: `t3.medium` (configurable via Terraform variables).
+*   **Auto-Scaling**: Min 1, Desired 2, Max 4 nodes across 2 Availability Zones.
+*   **Logging**: Integrated with **Fluent Bit** DaemonSet to stream logs to CloudWatch.
 
 ---
 
@@ -80,7 +80,7 @@ The architecture uses **IAM Roles for Service Accounts (IRSA)** for secure AWS A
 | Component | Ingress Source | Allowed Port |
 | :--- | :--- | :--- |
 | **ALB** | Everywhere (0.0.0.0/0) | 80, 443 |
-| **Pods (Fargate)** | Managed by K8s Services | 80, 3000, 4000-4004 |
+| **Worker Nodes** | Managed by K8s Services & Cluster SG | 80, 3000, 4000-4004 |
 
 > [!IMPORTANT]
 > **Zero Trust Internal Networking**: Services communicate using internal ClusterIPs. The API Gateway is the only backend service exposed to the ALB.

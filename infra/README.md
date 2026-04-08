@@ -1,17 +1,18 @@
 # Finstack Infrastructure Guide (AWS EKS)
 
-This directory contains the **Infrastructure as Code (IaC)** for the Finstack platform on AWS. The system is built on **AWS EKS (Elastic Kubernetes Service)** using **Fargate** for a serverless experience.
+This directory contains the **Infrastructure as Code (IaC)** for the Finstack platform on AWS. The system is built on **AWS EKS (Elastic Kubernetes Service)** using **Managed Node Groups** (EC2-based worker nodes).
 
 ## Infrastructure Overview
 
 The infrastructure provides a highly available, secure, and scalable environment for microservices.
 
 ### Core Components
-- **EKS Cluster**: Managed Kubernetes control plane (v1.29).
-- **Fargate Profiles**: Serverless compute for the `finstack` and `kube-system` namespaces.
+- **EKS Cluster**: Managed Kubernetes control plane (v1.31).
+- **Managed Node Group**: EC2-based worker nodes (`t3.medium` by default) with auto-scaling (1-4 nodes).
 - **VPC Networking**: Custom VPC with Public/Private subnets across 2 Availability Zones.
 - **ALB Ingress Controller**: Automated AWS Application Load Balancer management via the **AWS Load Balancer Controller**.
 - **Security (IRSA)**: IAM Roles for Service Accounts to provide fine-grained permissions to Kubernetes Pods.
+- **EFS Storage**: Encrypted EFS for persistent storage (Prometheus, Grafana, Alertmanager).
 
 ---
 
@@ -29,7 +30,7 @@ To provision the entire environment, follow these steps:
     ```bash
     terraform apply "finstack_eks_deployment.plan"
     ```
-    *This will create the VPC, EKS Cluster, Fargate Profiles, and install the Load Balancer Controller via Helm.*
+    *This will create the VPC, EKS Cluster, Managed Node Group, and install the Load Balancer Controller via Helm.*
 
 3.  **Update Kubeconfig**:
     Connect your local `kubectl` to the new cluster:
@@ -62,7 +63,7 @@ Once the infrastructure is ready, deploy the microservices using the organized m
 
 ### Check Cluster Status
 ```bash
-kubectl get nodes           # Should show fargate nodes
+kubectl get nodes           # Should show EC2 worker nodes
 kubectl get pods -n finstack # All services should be Running
 ```
 
@@ -80,8 +81,11 @@ Centralized logs are available in **AWS CloudWatch** under the prefix `/aws/eks/
 ## 📂 File Structure
 
 - **`vpc.tf`**: Networking, Subnets, and NAT Gateway.
-- **`eks.tf`**: EKS Cluster and Fargate Profiles.
+- **`eks.tf`**: EKS Cluster and Managed Node Group.
 - **`irsa.tf`**: IAM Roles for Service Accounts (Security).
-- **`helm.tf`**: AWS Load Balancer Controller installation.
-- **`security.tf`**: ALB Security Group.
-- **`provider.tf`**: AWS, Kubernetes, and Helm provider configurations.
+- **`efs.tf`**: EFS File System and Access Points for monitoring.
+- **`security.tf`**: ALB and EKS Cluster Security Groups.
+- **`provider.tf`**: AWS and TLS provider configurations.
+- **`variables.tf`**: Configurable variables (region, instance type, scaling).
+- **`output.tf`**: Infrastructure outputs (cluster info, role ARNs, VPC ID).
+- **`backend.tf`**: S3 remote state configuration.

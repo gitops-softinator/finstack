@@ -14,7 +14,7 @@ resource "helm_release" "external_secrets" {
 
   set {
     name  = "webhook.create"
-    value = "false" # Fargate clusters often have webhook issues unless specific configurations are used, keeping it simple
+    value = "true" # Webhooks work normally on managed node groups
   }
 
   set {

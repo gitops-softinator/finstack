@@ -4,7 +4,7 @@ FinStack is a production-ready financial microservices platform designed for hig
 
 ## 🚀 Architecture
 
-The application is built using a **Cloud-Native Microservices** approach, orchestrated on **AWS EKS (Elastic Kubernetes Service)** using **EKS Fargate**.
+The application is built using a **Cloud-Native Microservices** approach, orchestrated on **AWS EKS (Elastic Kubernetes Service)** using **Managed Node Groups**.
 
 ### Microservices Catalog
 - **Frontend (Port 80)**: React-based client application.
@@ -24,7 +24,7 @@ For a detailed deep-dive into the system design, network topology, and diagrams,
 The platform is fully automated using **Infrastructure as Code (IaC)**.
 
 *   **Cloud Provider**: AWS
-*   **Orchestration**: EKS Fargate (Serverless Kubernetes)
+*   **Orchestration**: EKS Managed Node Groups (EC2-based Kubernetes)
 *   **Networking**: VPC with isolated Private Subnets, NAT Gateway & AWS Load Balancer Controller.
 *   **Provisioning**: [Terraform](file:///home/gitops/Desktop/finstack/infra/)
 *   **Deployment**: [Kubernetes Manifests](file:///home/gitops/Desktop/finstack/k8s/)

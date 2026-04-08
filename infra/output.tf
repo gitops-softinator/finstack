@@ -39,3 +39,13 @@ output "eso_role_arn" {
   description = "IAM Role ARN for External Secrets Operator"
   value       = aws_iam_role.external_secrets.arn
 }
+
+output "node_group_name" {
+  description = "Name of the EKS managed node group"
+  value       = aws_eks_node_group.main.node_group_name
+}
+
+output "node_role_arn" {
+  description = "IAM Role ARN for EKS worker nodes"
+  value       = aws_iam_role.eks_nodes.arn
+}

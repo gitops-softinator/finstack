@@ -12,9 +12,9 @@ resource "helm_release" "argocd" {
     value = "ClusterIP"
   }
 
-  # Redis persistence should be disabled for Fargate compatibility
+  # Redis persistence can be enabled with managed node groups (EBS supported)
   set {
     name  = "redis.persistence.enabled"
-    value = "false"
+    value = "true"
   }
 }

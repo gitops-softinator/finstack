@@ -10,7 +10,7 @@ Hamara poora EKS setup ek digital ghar (Real Estate) ke jaisa hai.
 ### **AWS EKS (The Neighborhood)**
 Pehle hum ECS use kar rahe the (jo sirf AWS ka apna neighborhood tha). Ab hum **Kubernetes (EKS)** par hain.
 *   **Kubernetes (K8s)**: Ye poore world ka standard hai. Ek baar isse sikh liya, toh aap Google Cloud ya Azure par bhi same asaan tarike se code chala sakte hain.
-*   **Fargate (Serverless)**: Iska matlab hai humein ghar ki maintenance (Server Manage) nahi karni padti. AWS hamare liye hamesha rooms ready rakhta hai.
+*   **Managed Node Groups**: AWS hamare liye EC2 machines (worker nodes) ko automatically manage karta hai — provisioning, patching, aur upgrades sab AWS handle karta hai.
 
 ---
 

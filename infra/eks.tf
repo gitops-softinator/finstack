@@ -53,9 +53,9 @@ resource "aws_iam_openid_connect_provider" "eks" {
   url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
 
-# Fargate Execution IAM Role
-resource "aws_iam_role" "fargate_execution" {
-  name = "finstack-fargate-execution-role"
+# EKS Node Group IAM Role
+resource "aws_iam_role" "eks_nodes" {
+  name = "finstack-eks-node-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -64,88 +64,38 @@ resource "aws_iam_role" "fargate_execution" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "eks-fargate-pods.amazonaws.com"
+          Service = "ec2.amazonaws.com"
         }
       },
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "fargate_execution_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-  role       = aws_iam_role.fargate_execution.name
+resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.eks_nodes.name
 }
 
-# Fargate Profile for application namespace
-resource "aws_eks_fargate_profile" "finstack" {
-  cluster_name           = aws_eks_cluster.main.name
-  fargate_profile_name   = "finstack-profile"
-  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
-  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
-
-  selector {
-    namespace = "finstack"
-  }
+resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.eks_nodes.name
 }
 
-# Fargate Profile for kube-system (CoreDNS)
-resource "aws_eks_fargate_profile" "kube_system" {
-  cluster_name           = aws_eks_cluster.main.name
-  fargate_profile_name   = "kube-system"
-  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
-  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
-
-  selector {
-    namespace = "kube-system"
-  }
+resource "aws_iam_role_policy_attachment" "eks_container_registry" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_nodes.name
 }
 
-# Fargate Profile for monitoring namespace
-resource "aws_eks_fargate_profile" "monitoring" {
-  cluster_name           = aws_eks_cluster.main.name
-  fargate_profile_name   = "monitoring"
-  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
-  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
-
-  selector {
-    namespace = "monitoring"
-  }
-}
-
-# Fargate Profile for ArgoCD
-resource "aws_eks_fargate_profile" "argocd" {
-  cluster_name           = aws_eks_cluster.main.name
-  fargate_profile_name   = "argocd"
-  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
-  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
-
-  selector {
-    namespace = "argocd"
-  }
-}
-
-# Fargate Profile for External Secrets
-resource "aws_eks_fargate_profile" "external_secrets" {
-  cluster_name           = aws_eks_cluster.main.name
-  fargate_profile_name   = "external-secrets"
-  pod_execution_role_arn = aws_iam_role.fargate_execution.arn
-  subnet_ids             = [aws_subnet.private.id, aws_subnet.private_2.id]
-
-  selector {
-    namespace = "external-secrets"
-  }
-}
-
-# Add IAM Policy for Native Fargate CloudWatch Logging
-resource "aws_iam_role_policy" "fargate_logging" {
-  name = "finstack-fargate-logging-policy"
-  role = aws_iam_role.fargate_execution.name
+# CloudWatch Logging Policy for Nodes
+resource "aws_iam_role_policy" "node_logging" {
+  name = "finstack-node-logging-policy"
+  role = aws_iam_role.eks_nodes.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "logs:CreateLogStream",
           "logs:CreateLogGroup",
           "logs:DescribeLogStreams",
@@ -155,4 +105,34 @@ resource "aws_iam_role_policy" "fargate_logging" {
       }
     ]
   })
+}
+
+# EKS Managed Node Group
+resource "aws_eks_node_group" "main" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "finstack-node-group"
+  node_role_arn   = aws_iam_role.eks_nodes.arn
+  subnet_ids      = [aws_subnet.private.id, aws_subnet.private_2.id]
+
+  instance_types = [var.node_instance_type]
+
+  scaling_config {
+    desired_size = var.node_desired_size
+    min_size     = var.node_min_size
+    max_size     = var.node_max_size
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_worker_node_policy,
+    aws_iam_role_policy_attachment.eks_cni_policy,
+    aws_iam_role_policy_attachment.eks_container_registry,
+  ]
+
+  tags = {
+    Name = "finstack-node-group"
+  }
 }

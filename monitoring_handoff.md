@@ -1,22 +1,22 @@
-# Handoff: EKS Fargate Monitoring Setup (Phase 3)
+# Handoff: EKS Monitoring Setup (Phase 3)
 
 This document summarized the progress of adding a "Top-Tier" observability stack to the Finstack EKS cluster and provides the final steps for Phase 3.
 
 ---
 
 ## 1. Project Context
-- **Cluster**: EKS v1.31 (Fargate-only).
+- **Cluster**: EKS v1.31 (Managed Node Groups).
 - **Goal**: Implement persistent monitoring (Prometheus + Grafana) using Amazon EFS for a "Top-Tier" resume project.
 
 ## 2. Current Architectural State (Phase 1 & 2 Complete)
 - **Terraform**: 
   - `infra/efs.tf` created (EFS File System: `fs-0c919cb0f4b5443fd`).
-  - `infra/eks.tf` updated (Fargate Profile for `monitoring` namespace).
+  - `infra/eks.tf` updated (Managed Node Group for all namespaces).
   - `infra/irsa.tf` updated (IAM Role: `finstack-efs-csi-driver-role` for ServiceAccount `efs-csi-controller-sa` in `kube-system`).
 - **Kubernetes**:
   - `monitoring` namespace created.
   - `efs-sc` StorageClass created (Storage Mode: Access Points).
-  - **AWS EFS CSI Driver**: Deployed via Helm to `kube-system`.
+  - **AWS EFS CSI Driver**: Deployed via Helm to `kube-system` (DaemonSet runs on managed nodes).
 
 ## 3. Tasks for Phase 3 (Next Model Instructions)
 

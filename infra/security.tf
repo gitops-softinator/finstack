@@ -33,7 +33,7 @@ resource "aws_security_group" "alb_sg" {
 # EKS Cluster Security Group
 resource "aws_security_group" "eks_cluster_sg" {
   name        = "eks-cluster-sg"
-  description = "Security group for EKS Cluster and Fargate pods"
+  description = "Security group for EKS Cluster and worker nodes"
   vpc_id      = aws_vpc.main.id
 
   # Allow all traffic from ALB
