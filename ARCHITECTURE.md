@@ -10,47 +10,61 @@ The system follows a **Cloud-Native Microservices** pattern, where each function
 
 ```mermaid
 graph TD
-    subgraph "External"
-        User((User))
+
+%% External
+subgraph External
+    User((User))
+end
+
+%% AWS VPC
+subgraph "AWS VPC (10.0.0.0/16)"
+
+    %% Public Subnets
+    subgraph "Public Subnets"
+        ALB[AWS Application Load Balancer]
+        NAT[NAT Gateway]
     end
 
-    subgraph "AWS VPC (10.0.0.0/16)"
-        subgraph "Public Subnets"
-            ALB[AWS Application Load Balancer]
-            NAT[NAT Gateway]
+    %% EKS Cluster
+    subgraph "EKS Cluster (finstack-cluster)"
+
+        %% Frontend
+        subgraph Frontend
+            FE[Frontend Service]
         end
 
-        subgraph "EKS Cluster (finstack-cluster)"
-            subgraph "Namespace: finstack (Managed Nodes)"
-                Frontend[Frontend Pods]
-                Gateway[API Gateway Pods]
-                
-                subgraph "Backend Services"
-                    Auth[Auth Service]
-                    UserSvc[User Service]
-                    Pay[Payment Service]
-                    Notif[Notification Service]
-                    Trans[Transaction Service]
-                end
-            end
+        %% Backend Services
+        subgraph Backend
+            Auth[Auth Service]
+            Trans[Transaction Service]
+            UserSvc[User Service]
+        end
+
+        %% Data Layer
+        subgraph Data
+            DB[(RDS Database)]
+            Cache[(Redis Cache)]
         end
     end
+end
 
-    %% Inbound Traffic (via ALB Ingress Controller)
-    User -- "HTTP :80" --> ALB
-    ALB -- "Path: /" --> Frontend
-    ALB -- "Path: /api/*" --> Gateway
-    
-    %% Internal Routing (K8s Native DNS)
-    Gateway -- "finstack-auth-service" --> Auth
-    Gateway -- "finstack-user-service" --> UserSvc
-    Gateway -- "finstack-payment-service" --> Pay
-    Gateway -- "finstack-notification-service" --> Notif
-    Gateway -- "finstack-transaction-service" --> Trans
+%% Connections
+User --> ALB
+ALB --> FE
 
-    %% Outbound Traffic (Updates/APIs)
-    Backend Services -- "Outbound" --> NAT
-    NAT -- "0.0.0.0/0" --> Internet((Internet))
+FE --> Auth
+FE --> Trans
+FE --> UserSvc
+
+Auth --> DB
+Trans --> DB
+UserSvc --> DB
+
+Auth --> Cache
+Trans --> Cache
+
+%% Outbound traffic
+Trans -->|Outbound| ExternalService[External APIs]
 ```
 
 ---
